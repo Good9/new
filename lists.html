@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="__PUBLIC__/admin/bootstrap2.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <title></title>
+    <link href="__PUBLIC__/admin/styles/Common.css" rel="stylesheet" />
+    <link href="__PUBLIC__/admin/styles/Index2.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <h4>新闻列表</h4>
+            <div class="add"><a class="btn btn-success" onclick="openadd();">新增</a></div>
+            <div class="w">
+                <div class="span12">
+                    <table class="table table-condensed table-bordered table-hover tab">
+                        <thead>
+                            <tr>
+                                <th>编号</th>
+                                <th>标题</th>
+                                <th>作者</th>
+                                <th>来源</th>
+                                <th>时间</th>
+                                <th>点击量</th>
+                                <th>描述</th>
+                                <th>内容</th>
+                                <th>缩略图</th>
+                                <th>编辑</th>
+                                <th>链接地址</th>
+                                <th>所属栏目</th>
+                                
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                          {volist name="news" id="vo"}
+                            <tr>
+                                <td class="newsId">{$vo.newsId}</td>
+                                <td class="newsTitle">{$vo.newsTitle|mysubstr=###,0,9}</td>
+                                <td class="newsWriter">{$vo.newsWriter}</td>
+                                <td class="newsSource">{$vo.newsSource}</td>
+                                <td class="newsTime">{$vo.newsTime}</td>
+                                <td class="newsClick">{$vo.newsClick}</td>
+                                <td class="newsDes">{$vo.newsDes|mysubstr=###,0,20}</td>
+                                <td class="newsContent">{$vo.newsContent|htmlTotextSubstr=###,0,20}</td>
+                                <td class="newsPic">{$vo.newsPic}</td>
+                                <td class="newsAdmin">{$vo.newsAdmin}</td>
+                                <td class="newsHref">{$vo.newsHref}</td> 
+                                <td class="menuName">{$vo.menuName}</td>
+                                <td><a class="edit" onclick="UpdateOpen()">编辑</a> <a onclick="del('{:url('News/delNews')}',{$vo.newsId},'{$vo.newsTitle}','{:url('News/lists')}')">删除</a></td>
+                            </tr> 
+                        {/volist}
+                   </tbody>
+                    </table>
+                    <div id="page" class="tr"></div>
+                </div>
+            </div>
+
+<!--                            添加新闻start                              -->
+
+            <div id="addModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel">添加新闻</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label" for="newsTitle">新闻标题</label>
+                            <div class="controls">
+                                <input type="text" id="newsTitle" placeholder="新闻标题">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsWriter">作者</label>
+                            <div class="controls">
+                                <input type="text" id="newsWriter" placeholder="作者">
+                            </div>
+                        </div>
+ 
+                        <div class="control-group">
+                            <label class="control-label" for="newsSource">来源</label>
+                            <div class="controls">
+                                <input type="text" id="newsSource" placeholder="来源">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsClick">点击量</label>
+                            <div class="controls">
+                                <input type="text" id="newsClick" placeholder="点击量">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsDes">描述</label>
+                            <div class="controls">
+                                <input type="text" id="newsDes" placeholder="描述">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsContent">内容</label>
+                            <div class="controls">
+                                <textarea type="text" id="newsContent" placeholder="内容"></textarea>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsPic">缩略图</label>
+                            <div class="controls">
+                                <input type="file" id="newsPic" placeholder="缩略图">
+                            </div>
+                        </div>
+
+
+                        <div class="control-group">
+                            <label class="control-label" for="newsAdmin">责任编辑</label>
+                            <div class="controls">
+                                <input type="text" id="newsAdmin" placeholder="责任编辑">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="menuId">所属栏目</label>
+                            <div class="controls">
+                                <select name="menuId" id="menuId">
+                                {volist name='newsMenu' id="vo"}
+                                    <option value="{$vo.menuId}">{$vo.menuName}</option>
+                                {/volist}
+                                </select>
+                            </div>
+                        </div>
+                          <div class="control-group">
+                            <label class="control-label" for="newsHref">链接地址</label>
+                            <div class="controls">
+                                <input type="text" id="newsHref" placeholder="链接地址">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="add" onclick="add('{:url('news/addNews')}','{:url('news/lists')}');">保存</button>
+                    <button class="btn btn-primary" id="edt" onclick="edt();">保存</button>
+                </div>
+            </div>
+
+
+
+<!---                             编辑栏目start                                      -->
+
+
+            <div id="UpdateAddModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="UpdateMyModalLabel">编辑新闻</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label" for="newsTitle2">新闻标题</label>
+                            <div class="controls">
+                            <input type="hidden" id="newsId2" name="newsId2">
+                                <input type="text" id="newsTitle2" placeholder="新闻标题">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="newsWriter2">作者</label>
+                            <div class="controls">
+                                <input type="text" id="newsWriter2" placeholder="作者">
+                            </div>
+                        </div>
+ 
+                        <div class="control-group">
+                            <label class="control-label" for="newsSource2">来源</label>
+                            <div class="controls">
+                                <input type="text" id="newsSource2" placeholder="来源">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsClick2">点击量</label>
+                            <div class="controls">
+                                <input type="text" id="newsClick2" placeholder="点击量">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsDes2">描述</label>
+                            <div class="controls">
+                                <input type="text" id="newsDes2" placeholder="描述">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsContent2">内容</label>
+                            <div class="controls">
+                                <textarea type="text" id="newsContent2" placeholder="内容"></textarea>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="newsPic2">缩略图</label>
+                            <div class="controls">
+                                <input type="file" id="newsPic2" placeholder="缩略图">
+                            </div>
+                        </div>
+
+
+                        <div class="control-group">
+                            <label class="control-label" for="newsAdmin2">责任编辑</label>
+                            <div class="controls">
+                                <input type="text" id="newsAdmin2" placeholder="责任编辑">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="menuId2">所属栏目</label>
+                            <div class="controls">
+                                <select name="menuId2" id="menuId2">
+                                {volist name='newsMenu' id="vo"}
+                                    <option value="{$vo.menuName}">{$vo.menuName}</option>
+                                {/volist}
+                                </select>
+                            </div>
+                        </div>
+                          <div class="control-group">
+                            <label class="control-label" for="newsHref2">链接地址</label>
+                            <div class="controls">
+                                <input type="text" id="newsHref2" placeholder="链接地址">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="UpdateAdd" onclick="UpdateAdd('{:url('news/UpdateAddNews')}','{:url('news/lists')}');">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="__PUBLIC__/admin/scripts/jquery-1.9.1.min.js"></script>
+    <script src="__PUBLIC__/admin/bootstrap2.3.2/js/bootstrap.min.js"></script>
+    <script src="__PUBLIC__/admin/layer-v2.3/layer/layer.js"></script>
+    <script src="__PUBLIC__/admin/laypage-v1.3/laypage/laypage.js"></script>
+    <script src="__PUBLIC__/admin/scripts/Index2.js"></script>
+</body>
+</html>
